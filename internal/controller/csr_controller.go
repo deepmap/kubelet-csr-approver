@@ -188,14 +188,17 @@ func appendCondition(csr *certificatesv1.CertificateSigningRequest, approved boo
 			LastTransitionTime: metav1.Time{},
 		})
 	} else {
-		csr.Status.Conditions = append(csr.Status.Conditions, certificatesv1.CertificateSigningRequestCondition{
-			Type:               certificatesv1.CertificateDenied,
-			Status:             corev1.ConditionTrue,
-			Reason:             "kubelet-serving cert denied",
-			Message:            "CSR not complying with kubelet-csr-approver validation process. Reason: " + reason,
-			LastUpdateTime:     metav1.Now(),
-			LastTransitionTime: metav1.Time{},
-		})
+		// a log error will be shown, this is a little bit aggresive, once a csr is denied, you can't approve it afterward
+		// you need to recreate the csr. Maybe we could add that in the future when this code is in prod for few times.
+		// For example in dev, the csr was denied because of a dns check
+		//csr.Status.Conditions = append(csr.Status.Conditions, certificatesv1.CertificateSigningRequestCondition{
+		//	Type:               certificatesv1.CertificateDenied,
+		//	Status:             corev1.ConditionTrue,
+		//	Reason:             "kubelet-serving cert denied",
+		//	Message:            "CSR not complying with kubelet-csr-approver validation process. Reason: " + reason,
+		//	LastUpdateTime:     metav1.Now(),
+		//	LastTransitionTime: metav1.Time{},
+		//})
 	}
 }
 
